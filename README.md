@@ -1,10 +1,10 @@
 # a-topic
 heyhey...
 
-watch some site topic
+### watch some site topic
 
-node index.js [site topic url]
+### node index.js [site topic url]
 
-#1 what you need are:
-#2 1> a nodejs
-#2 2> a curl command line tool
+### what you need are:
+#### 1> a nodejs
+#### 2> a curl command line tool

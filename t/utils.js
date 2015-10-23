@@ -17,7 +17,7 @@ var isSingle = function (tag, tagName) {
 };
 utils.isSingle = isSingle;
 
-var rattr = / +([\w-]+)(?:=\"([^\"]+)\"|=\'([^\']+)\'|)?/g;
+var rattr = /[\s\t]+([\w-]+)(?:=\"([^\"]+)\"|=\'([^\']+)\'|)?/g;
 utils.rattr = rattr;
 
 var makeAttributes = function (str) {

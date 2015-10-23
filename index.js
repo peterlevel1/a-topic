@@ -70,7 +70,7 @@ function setContent(str) {
   treeWalker(rootNode, function (node, y, x) {
     var attr = node.attributes;
     var clazz = attr && attr['class'];
-    if (clazz && clazz.indexOf(target) >= 0) {
+    if (clazz && (clazz += ' ').indexOf(target) >= 0) {
       ret.push(node.tagString.replace('{{ninja}}', node.textContent));
     }
   });

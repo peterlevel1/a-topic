@@ -1,4 +1,5 @@
-var cmd = 'curl -o page-main.html http://www.zhihu.com/question/27331509';
+var topic = process.argv.slice(2)[0] || 'http://www.zhihu.com/question/27331509';
+var cmd = 'curl -o page-main.html ' + topic;
 var exec = require('child_process').exec;
 var assert = require('assert');
 var fs = require('fs');

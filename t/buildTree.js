@@ -37,7 +37,7 @@ function buildTree(str) {
 			istackEnd : index,
 			tagName : tagName,
 			textContent : '',
-			_attr : null,
+			_attr : '',
 			attributes : null,
 			single : false,
 			nodeType : 1,

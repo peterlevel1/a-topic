@@ -30,8 +30,9 @@
 				? treeWalker(node, callback, prop, y, i)
 				: callback(node, y, i);
 
-			if (ret === false) break;
-			else if (ret === true) continue;
+			if (ret === false) {
+				break;
+			}
 		}
 	};
 

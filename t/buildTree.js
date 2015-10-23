@@ -66,7 +66,7 @@ function buildTree(str) {
 			parentIndex : parentIndex,
 			attributes : !isEnd && utils.makeAttributes(tag),
 			tagString : tag,
-			_attr : !isEnd && (match[3] || '').replace(/\/$/, '');
+			_attr : !isEnd && (match[3] || '').replace(/\/$/, '')
 		});
 		if (!isEnd) {
 			parentIndex = index;

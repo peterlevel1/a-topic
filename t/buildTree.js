@@ -37,6 +37,7 @@ function buildTree(str) {
 			istackEnd : index,
 			tagName : tagName,
 			textContent : '',
+			_attr : null,
 			attributes : null,
 			single : false,
 			nodeType : 1,
@@ -53,6 +54,7 @@ function buildTree(str) {
 			node.istackStart = node.istackEnd;
 			node.attributes = utils.makeAttributes(tag);
 			node.children = null;
+			node._attr = (match[3] || '').replace(/\/$/, '');
 			memo.push(node);
 			return memo;
 		}
@@ -63,7 +65,8 @@ function buildTree(str) {
 			index : index,
 			parentIndex : parentIndex,
 			attributes : !isEnd && utils.makeAttributes(tag),
-			tagString : tag
+			tagString : tag,
+			_attr : !isEnd && (match[3] || '').replace(/\/$/, '');
 		});
 		if (!isEnd) {
 			parentIndex = index;
@@ -83,6 +86,7 @@ function buildTree(str) {
 		node.textContent = stack.slice(node.istackStart + 1, node.istackEnd).join('');
 		node.parentIndex = node.istackStart === 0 ? false : startTag.parentIndex || 0;
 		node.tagString = startTag.tagString + '{{ninja}}' + node.tagString;
+		node._attr = startTag._attr;
 
 		map[node.istackStart] = node;
 		parentIndex = startTag.parentIndex;

@@ -25,7 +25,7 @@ function curlCmd(cmd) {
   var opt = { maxBuffer : 200 * 1024 };
   exec(cmd, opt, function (err, stdout, stderr) {
     if (err != null) {
-      return console.log('exec error: ' + error);
+      return console.log('exec error: ' + err);
     }
 
     readFile(inputFile, 'utf8', function (err, str) {

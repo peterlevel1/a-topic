@@ -1,4 +1,8 @@
-var topic = process.argv.slice(2)[0] || 'http://www.zhihu.com/question/27331509';
+var argv = process.argv.slice(2);
+var topic = argv[0] || 'http://www.zhihu.com/question/27331509';
+var INTERVAL = argv[1] && (argv[1] -= 0) >= 3 * 1000
+  ? argv[1]
+  : 10 * 1000;
 var cmd = 'curl -o page-main.html ' + topic;
 var exec = require('child_process').exec;
 var assert = require('assert');
@@ -9,7 +13,6 @@ var inputFile = './page-main.html';
 var outputFile = './page-out.html';
 var prevLen = null;
 var curLen = null;
-var INTERVAL = 10 * 1000;
 var tmpl_1 = fs.readFileSync('./tmpl-1.html', 'utf8');
 var goOn = true;
 var prevRet = [];

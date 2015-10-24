@@ -54,7 +54,7 @@ function buildTree(str) {
 			node.istackStart = node.istackEnd;
 			node.attributes = utils.makeAttributes(tag);
 			node.children = null;
-			node._attr = (match[3] || '').replace(/\/$/, '');
+			node._attr = match[3].replace(/\/$/, '');
 			memo.push(node);
 			return memo;
 		}
@@ -66,7 +66,7 @@ function buildTree(str) {
 			parentIndex : parentIndex,
 			attributes : !isEnd && utils.makeAttributes(tag),
 			tagString : tag,
-			_attr : !isEnd && (match[3] || '').replace(/\/$/, '')
+			_attr : match[3]
 		});
 		if (!isEnd) {
 			parentIndex = index;

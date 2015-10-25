@@ -81,9 +81,30 @@ function regParts(reg, str) {
 	return ret;
 }
 
-function replaceLess(str, bad) {
+var rquote = /['"]/;
+
+var oescape = {
+	'&' : '&amp;',
+	'<' : '&lt;',
+	'>' : '&gt;',
+	'"' : '&quot;',
+	"'" : '&#x27;',
+	'/' : '&#x2F;'
+};
+
+var rescape = /[&<>"'\/]/g;
+
+function _replace(one) {
+	return oescape[one];
+}
+
+function escapeString(str) {
+	return str.replace(rescape, _replace);
+}
+
+function escapeBad(str, bad) {
 	return str.slice(0, bad.index)
-		+ bad[0].replace(/</g, '&lt;')
+		+ escapeString(bad[0])
 		+ str.slice(bad.index + bad[0].length);
 }
 
@@ -95,12 +116,14 @@ function handleParts(rhead, rtail, str) {
 
 	if (head.length && tail.length && head.length !== tail.length) {
 		console.warn('handleParts: head.length !== tail.length');
-		var len = head.length;
-		while (len--) {
-			bad = head[len];
-			if (bad[0][bad[0].length - 2] === '/') {
-				str = replaceLess(str, bad);
-				head.splice(len, 1);
+		if (rtag.test(head[0])) {
+			var len = head.length;
+			while (len--) {
+				bad = head[len];
+				if (bad[0][bad[0].length - 2] === '/') {
+					str = escapeBad(str, bad);
+					head.splice(len, 1);
+				}
 			}
 		}
 
@@ -108,7 +131,7 @@ function handleParts(rhead, rtail, str) {
 			bad = head.length > tail.length
 				? head.shift()
 				: tail.pop();
-			str = replaceLess(str, bad);
+			str = escapeBad(str, bad);
 		}
 	}
 
@@ -117,7 +140,7 @@ function handleParts(rhead, rtail, str) {
 		if (!tail.length) console.warn('handleParts: no tail part');
 		var one = head || tail;
 		if (one.length) {
-			while (bad = one.shift()) str = replaceLess(str, bad);
+			while (bad = one.shift()) str = escapeBad(str, bad);
 		}
 		ret.str = str;
 		return ret;

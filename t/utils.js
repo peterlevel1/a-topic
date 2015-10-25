@@ -2,6 +2,7 @@ var utils = module.exports;
 
 var rtag = utils.rtag = /<(\/)?([\w]+)([^>]+|)?>/;
 var rtag_g = utils.rtag_g = /<[^>]+>/g;
+
 var singleTags = utils.singleTags = 'link br hr meta input img base param'.split(' ');
 var isSingle = utils.isSingle = function (tag, tagName) {
 	return tag[tag.length - 2] === '/' ||

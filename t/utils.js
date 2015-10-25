@@ -73,11 +73,8 @@ utils.handleComments = function(str) {
 function regParts(reg, str) {
 	var one;
 	var ret = [];
+	while (one = reg.exec(str)) ret.push(one);
 	ret.str = str;
-	while (one = reg.exec(str)) {
-		ret.push(one);
-	}
-
 	return ret;
 }
 
@@ -116,7 +113,7 @@ function handleParts(rhead, rtail, str) {
 
 	if (head.length !== tail.length) {
 		console.warn('handleParts: head.length !== tail.length');
-		if (rtag.test(head[0]) && head.length) {
+		if (head.length && rtag.test(head[0][0])) {
 			var len = head.length;
 			while (len--) {
 				bad = head[len];

@@ -2,15 +2,56 @@ var parseString = require('./parseString.js');
 var utils = require('./utils.js');
 module.exports = buildTree;
 
-function buildTree(str) {
-	var stack = typeof str === 'string'
+function setSingleNode(node, map, tag, match) {
+	node.single = true;
+	node.istackStart = node.istackEnd;
+	node.attributes = utils.makeAttributes(tag);
+	node.children = null;
+	node._attr = (match[3] || '').replace(/\/$/, '');
+	map[node.istackStart] = node;
+}
+
+function setNode(node, map, startTag, stack) {
+	node.attributes = startTag.attributes;
+	node.istackStart = startTag.index;
+	node.textContent = stack.slice(node.istackStart + 1, node.istackEnd).join('');
+	node.parentIndex = node.istackStart === 0 ? false : startTag.parentIndex || 0;
+	node.tagString = startTag.tagString + '{{ninja}}' + node.tagString;
+	node._attr = startTag._attr || '';
+	map[node.istackStart] = node;
+}
+
+function getInitNode(opts) {
+	return {
+		istackEnd : opts.istackEnd,
+		tagName : opts.tagName,
+		parentIndex : opts.parentIndex,
+		tagString : opts.tagString,
+		//
+		istackStart : null,
+		textContent : '',
+		_attr : '',
+		attributes : null,
+		single : false,
+		nodeType : 1,
+		parentNode : null,
+		children : [],
+		depth : 0
+	};
+}
+
+function getStack(str) {
+	return typeof str === 'string'
 		? parseString(str)
 		: Array.isArray(str) && str.tagNames
 		? str
 		: null;
-	if (!stack) {
+}
+
+function buildTree(str) {
+	var stack = getStack(str);
+	if (!stack)
 		throw new Error('buildTree: not standard input arg');
-	}
 
 	var tracker = [];
 	var parentIndex = false;
@@ -18,43 +59,23 @@ function buildTree(str) {
 
 	//the tree
 	var tree = stack.reduce(function (memo, tag, index) {
-		if (tag[0] !== '<' || !utils.rtag.test(tag)) {
+		if (tag[0] !== '<' || !utils.rtag.test(tag))
 			return memo;
-		}
 
 		var match = utils.rtag.exec(tag);
-		if (!match) {
+		var tagName = (match || [])[2];
+		if (!match || !tagName)
 			throw new Error('buildTree: miss match tag: ' + tag);
-		}
 
-		var tagName = match[2];
-		if (!tagName) {
-			throw new Error('buildTree: miss match tagName: ' + tag);
-		}
+		var node = getInitNode({
+			istackEnd: index,
+			tagName: tagName,
+			parentIndex: parentIndex,
+			tagString: tag
+		});
 
-		var node = {
-			istackStart : null,
-			istackEnd : index,
-			tagName : tagName,
-			textContent : '',
-			_attr : '',
-			attributes : null,
-			single : false,
-			nodeType : 1,
-			parentNode : null,
-			children : [],
-			parentIndex : parentIndex,
-			tagString : tag,
-			itab : 0
-		};
-
-		var single = utils.isSingle(tag, tagName);
-		if (single) {
-			node.single = true;
-			node.istackStart = node.istackEnd;
-			node.attributes = utils.makeAttributes(tag);
-			node.children = null;
-			node._attr = (match[3] || '').replace(/\/$/, '');
+		if (utils.isSingle(tag, tagName)) {
+			setSingleNode(node, map, tag, match);
 			memo.push(node);
 			return memo;
 		}
@@ -66,7 +87,7 @@ function buildTree(str) {
 			parentIndex : parentIndex,
 			attributes : !isEnd && utils.makeAttributes(tag),
 			tagString : tag,
-			_attr : match[3]
+			_attr : match[3] || ''
 		});
 		if (!isEnd) {
 			parentIndex = index;
@@ -75,22 +96,12 @@ function buildTree(str) {
 
 		var endTag = tracker.pop();
 		var startTag = tracker.pop();
-		if (endTag.tagName !== startTag.tagName) {
-			console.log(startTag);
-			console.log(endTag);
+		if (endTag.tagName !== startTag.tagName)
 			throw new Error('buildTree: ' + endTag.tagName + ' !== ' + startTag.tagName);
-		}
 
-		node.attributes = startTag.attributes;
-		node.istackStart = startTag.index;
-		node.textContent = stack.slice(node.istackStart + 1, node.istackEnd).join('');
-		node.parentIndex = node.istackStart === 0 ? false : startTag.parentIndex || 0;
-		node.tagString = startTag.tagString + '{{ninja}}' + node.tagString;
-		node._attr = startTag._attr;
+		setNode(node, map, startTag, stack);
 
-		map[node.istackStart] = node;
 		parentIndex = startTag.parentIndex;
-
 		memo.push(node);
 		return memo;
 	}, [])
@@ -100,10 +111,9 @@ function buildTree(str) {
 	.map(function (node, index) {
 		if (index > 0) {
 			node.parentNode = map[node.parentIndex];
-			map[node.parentIndex].children.push(node);
-			node.itab = node.parentNode.itab + 1;
+			node.parentNode.children.push(node);
+			node.depth = node.parentNode.depth + 1;
 		}
-
 		return node;
 	});
 

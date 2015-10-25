@@ -1,26 +1,21 @@
 var utils = module.exports;
 
-var rtag = /<(\/)?([\w]+)([^>]+|)?>/;
-utils.rtag = rtag;
+var rtag = utils.rtag = /<(\/)?([\w]+)([^>]+|)?>/;
 
-var rtag_g = /<[^>]+>/g;
-utils.rtag_g = rtag_g;
+var rtag_g = utils.rtag_g = /<[^>]+>/g;
 
-var singleTags = 'link br hr meta input img base param'.split(' ');
-utils.singleTags = singleTags;
+var singleTags = utils.singleTags = 'link br hr meta input img base param'.split(' ');
 
-var isSingle = function (tag, tagName) {
+var isSingle = utils.isSingle = function (tag, tagName) {
 	return tag[tag.length - 2] === '/' ||
 		( (tagName ||
 			(tagName = (rtag.exec(tag) || [])[2]) ) &&
 			singleTags.indexOf(tagName) >= 0 );
 };
-utils.isSingle = isSingle;
 
-var rattr = /[\s\t]+([\w-]+)(?:=\"([^\"]+)\"|=\'([^\']+)\'|)?/g;
-utils.rattr = rattr;
+var rattr = utils.rattr = /[\s\t]+([\w-]+)(?:=\"([^\"]+)\"|=\'([^\']+)\'|)?/g;
 
-var makeAttributes = function (str) {
+var makeAttributes = utils.makeAttributes = function (str) {
 	var one;
 	var node = {};
 	while ((one = rattr.exec(str))) {
@@ -28,49 +23,105 @@ var makeAttributes = function (str) {
 	}
 	return node;
 };
-utils.makeAttributes = makeAttributes;
 
-var isTag = function (tag) {
+var isTag = utils.isTag = function (tag) {
 	return rtag.test(tag);
 };
-utils.isTag = isTag;
 
-var matchTag = function (tag) {
+var matchTag = utils.matchTag = function (tag) {
 	return isTag(tag) && tag.match(rtag);
 };
-utils.matchTag = matchTag;
 
-var isTagEnd = function (tag) {
+var isTagEnd = utils.isTagEnd = function (tag) {
 	return isTag(tag) && tag[1] === '/';
 };
-utils.isTagEnd = isTagEnd;
 
-var rtrim = /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g;
-utils.rtrim = rtrim;
+var rtrim = utils.rtrim = /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g;
 
-var trim = function (text) {
+utils.trim = function (text) {
 	return text == null
 		? ""
 		: ( text + "" ).replace( rtrim, "" );
 };
-utils.trim = trim;
 
-//not greedy match
-var rscript = /<script[^>]*>([\s\S]+?(?=\<\/script\>)|)?<\/script>/ig;
-utils.rscript = rscript;
+utils.rdoc = /<[!?]?(doctype|xml)[^>]+>/i;
 
-var rcomment = /<!--([\s\S]+?(?=\-\-\>)|)?-->/ig;
-utils.rcomment = rcomment;
+utils.rxmlHead = /<\?[^>]+\?>/ig;
+//not greedy match,
+//inner script tag no "<script> ... </script>"
+utils.rscript = /(<script[^>]*>)([\s\S]+?(?=\<\/script\>)|)?(<\/script>)/ig;
 
-var rbody = /<body[^>]*>[\s\S]+<\/body>/;
-utils.rbody = rbody;
+utils.rcomment = /<!--([\s\S]+?(?=\-\-\>)|)?-->/ig;
 
-var getBody = function (str) {
-	str = (str.match(rbody) || [])[0];
+var rbody = utils.rbody = /<body[^>]*>[\s\S]+<\/body>/;
 
-	if (!str)
-		throw new Error('getBody: str no body!');
-
-	return str;
+utils.getBody = function (str) {
+	return getMain(rbody, str);
 };
-utils.getBody = getBody;
+
+var rhead = utils.rhead = /<head[^>]*>[\s\S]+<\/head>/;
+
+utils.getHead = function (str) {
+	return getMain(rhead, str);
+};
+
+function getMain(reg, str) {
+	return (str.match(reg) || [''])[0];
+}
+
+var rscriptHead = utils.rscriptHead = /<script[^>]*>/ig;
+var rscriptTail = utils.rscriptTail = /<\/script>/ig;
+utils.handleScripts = function(str) {
+	return handleParts(rscriptHead, rscriptTail, str);
+};
+
+var rcommentHead = utils.rcommentHead = /<!--/ig;
+var rcommentTail = utils.rcommentTail = /-->/ig;
+utils.handleComments = function(str) {
+	return handleParts(rcommentHead, rcommentTail, str);
+};
+
+function regParts(reg, str) {
+	var ret = [];
+	ret.str = str;
+
+	var one;
+	while (one = reg.exec(str)) ret.push(one);
+
+	return ret;
+}
+
+function handleParts(rhead, rtail, str) {
+	var head = regParts(rhead, str);
+	var tail = regParts(rtail, str);
+
+	if (!head.length)
+		throw new Error('handleParts: no parts');
+
+	if (head.length !== tail.length)
+		throw new Error('handleParts: len not equal: ' + head.length + ' !== ' + tail.length);
+
+	var ret = [];
+	ret.str = str;
+
+	var start = 0;
+	var end = 0;
+	var tmpEnd;
+
+	while (head[0] != null) {
+		start = head[0].index;
+		ret.push({ isPart : false, index : end,  str : str.slice(end, start) });
+
+		tmpEnd = tail[0].index;
+		while (head[0] != null && head[0].index < tmpEnd) {
+			 head.shift();
+			 end = tail.shift();
+			 end = end.index + end[0].length;
+		}
+
+		ret.push({ isPart : true, index : start, str : str.slice(start, end) });
+	}
+
+	ret.push({ isPart : false, index : end, str : str.slice(end) });
+	return ret;
+}

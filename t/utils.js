@@ -89,6 +89,16 @@ var oescape = {
 	'/' : '&#x2F;'
 };
 
+var rescape = /[&<>"'\/]/g;
+
+function _replace(one) {
+	return oescape[one];
+}
+
+function escapeString(str) {
+	return str.replace(rescape, _replace);
+}
+
 var ounescape = {
 	'&amp;'  : '&',
 	'&lt;'   : '<',
@@ -98,14 +108,14 @@ var ounescape = {
 	'&#x2F;' : '/'
 };
 
-var rescape = /[&<>"'\/]/g;
+var runescape = /(?:&amp;|&lt;|&gt;|&quot;|&#x27;|&#x2F;)/g;
 
-function _replace(one) {
-	return oescape[one];
+function _unescape(one) {
+	return runescape[one];
 }
 
-function escapeString(str) {
-	return str.replace(rescape, _replace);
+function unescapeString(str) {
+	return str.replace(runescape, _unescape);
 }
 
 function escapeBad(str, bad) {

@@ -18,12 +18,14 @@ function repeatStr(i, repeated) {
 }
 
 function addQuote(opts, callback) {
-	var output = opts.output && path.normalize(output + '');
 	var input = opts.input && path.normalize(input + '');
-	var itab = opts.itab;
-
 	if (!input)
 		return callback(new Error('addQuote: input -> output, must both exists'));
+
+	var output = opts.output && path.normalize(output + '');
+	var tab = opts.itab != null
+			? repeatStr(opts.itab, '\t')
+			: '';
 
 	readFile(input, 'utf8', function (err, str) {
 		if (err)
@@ -31,9 +33,7 @@ function addQuote(opts, callback) {
 
 		str = str.split(rline)
 			.map(function (one) {
-				return (itab != null
-						? repeatStr(itab, '\t')
-						: '')
+				return tab
 					+	"'"
 					+ one.replace(rquote, '\\\'')
 					+ "'";

@@ -74,42 +74,52 @@ function regParts(reg, str) {
 	var one;
 	var ret = [];
 	ret.str = str;
-	while (one = reg.exec(str)) ret.push(one);
+	while (one = reg.exec(str)) {
+		ret.push(one);
+	}
 
 	return ret;
+}
+
+function replaceLess(str, bad) {
+	return str.slice(0, bad.index)
+		+ bad[0].replace(/</g, '&lt;')
+		+ str.slice(bad.index + bad[0].length);
 }
 
 function handleParts(rhead, rtail, str) {
 	var head = regParts(rhead, str);
 	var tail = regParts(rtail, str);
 	var ret = [];
-	ret.str = str;
+	var bad;
 
-	if (head.length && tail.length) {
-		if (head.length > tail.length) {
-			console.warn('handleParts: head.length > tail.length');
-			while (head.length > tail.length) {
-				head = head.slice(1);
+	if (head.length && tail.length && head.length !== tail.length) {
+		console.warn('handleParts: head.length !== tail.length');
+		var len = head.length;
+		while (len--) {
+			bad = head[len];
+			if (bad[0][bad[0].length - 2] === '/') {
+				str = replaceLess(str, bad);
+				head.splice(len, 1);
 			}
-		} else if (head.length < tail.length) {
-			console.warn('handleParts: head.length < tail.length');
-			while (head.length < tail.length) {
-				tail = tail.slice(0, tail.length - 1);
-			}
+		}
+
+		while (head.length !== tail.length) {
+			bad = head.length > tail.length
+				? head.shift()
+				: tail.pop();
+			str = replaceLess(str, bad);
 		}
 	}
 
 	if (!head.length || !tail.length) {
-		if (!head.length)
-			console.warn('handleParts: no head part');
-		else
-			ret.head = head;
-
-		if (!tail.length)
-			console.warn('handleParts: no tail part');
-		else
-			ret.tail = tail;
-
+		if (!head.length) console.warn('handleParts: no head part');
+		if (!tail.length) console.warn('handleParts: no tail part');
+		var one = head || tail;
+		if (one.length) {
+			while (bad = one.shift()) str = replaceLess(str, bad);
+		}
+		ret.str = str;
 		return ret;
 	}
 
@@ -135,5 +145,6 @@ function handleParts(rhead, rtail, str) {
 	if (end < str.length)
 		ret.push({ isPart : false, index : end, str : str.slice(end) });
 
+	ret.str = str;
 	return ret;
 }

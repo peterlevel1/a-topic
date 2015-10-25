@@ -94,15 +94,24 @@ function regParts(reg, str) {
 function handleParts(rhead, rtail, str) {
 	var head = regParts(rhead, str);
 	var tail = regParts(rtail, str);
-
-	if (!head.length)
-		throw new Error('handleParts: no parts');
-
-	if (head.length !== tail.length)
-		throw new Error('handleParts: len not equal: ' + head.length + ' !== ' + tail.length);
-
 	var ret = [];
 	ret.str = str;
+
+	if (head.length && tail.length) {
+		if (head.length > tail.length) {
+			console.log('handleParts: head.length > tail.length');
+			while (head.length > tail.length) head.shift();
+		} else if (head.length < tail.length) {
+			console.log('handleParts: head.length < tail.length');
+			while (head.length < tail.length) tail.pop();
+		}
+	}
+
+	if (!head.length || !tail.length) {
+		if (!head.length) console.warn('handleParts: no head part');
+		if (!tail.length) console.warn('handleParts: no tail part');
+		return ret;
+	}
 
 	var start = 0;
 	var end = 0;
@@ -110,7 +119,8 @@ function handleParts(rhead, rtail, str) {
 
 	while (head[0] != null) {
 		start = head[0].index;
-		ret.push({ isPart : false, index : end,  str : str.slice(end, start) });
+		if (start > end)
+			ret.push({ isPart : false, index : end,  str : str.slice(end, start) });
 
 		tmpEnd = tail[0].index;
 		while (head[0] != null && head[0].index < tmpEnd) {
@@ -122,6 +132,8 @@ function handleParts(rhead, rtail, str) {
 		ret.push({ isPart : true, index : start, str : str.slice(start, end) });
 	}
 
-	ret.push({ isPart : false, index : end, str : str.slice(end) });
+	if (end < str.length)
+		ret.push({ isPart : false, index : end, str : str.slice(end) });
+
 	return ret;
 }

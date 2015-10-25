@@ -40,9 +40,12 @@ utils.trim = function (text) {
 
 utils.rdoc = /^<[!?]?(doctype|xml)[^>]+>/i;
 utils.rxmlHead = /<\?[^>]+\?>/ig;
-//not greedy match, inner script tag no "<script> ... </script>"
-utils.rscript = /(<script[^>]*(?!\/)>)([\s\S]+?(?=\<\/script\>)|)?(<\/script>)/ig;
-utils.rcomment = /<!--([\s\S]+?(?=\-\-\>)|)?-->/ig;
+
+//not greedy match, inner script tag: two script tag should exist together
+utils.rscript = /(<script[^>]*(?!\/)>)([\s\S]+?(?=\<\/script\>)|)?(<\/script>)/g;
+utils.rscriptCommentLine = /\/\/([^\n]*?\n)/g;
+utils.rscriptCommentAll = /\/\*([\s\S]+?(?=\*\/)|)?\*\//g;
+utils.rcomment = /<!--([\s\S]+?(?=\-\-\>)|)?-->/g;
 
 var rbody = utils.rbody = /<body[^>]*>[\s\S]+<\/body>/;
 utils.getBody = function (str) {

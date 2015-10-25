@@ -151,7 +151,7 @@ function handleParts(rhead, rtail, str) {
 		}
 	}
 
-	if (!head.length || !tail.length) {
+	if (!head.length) {
 		if (!head.length) console.warn('handleParts: no head part');
 		if (!tail.length) console.warn('handleParts: no tail part');
 		ret.str = str;
@@ -167,14 +167,16 @@ function handleParts(rhead, rtail, str) {
 		if (start > end)
 			ret.push({ isPart : false, index : end,  str : str.slice(end, start) });
 
-		tmpEnd = tail[0].index;
-		while (head[0] != null && head[0].index < tmpEnd) {
-			 head.shift();
-			 end = tail.shift();
-			 end = end.index + end[0].length;
+		while (head[0] != null &&
+			(tmpEnd = tmpEnd || tail[0].index) > head[0].index) {
+			head.shift();
+			end = tail.shift();
+			end = end.index + end[0].length;
 		}
 
-		ret.push({ isPart : true, index : start, str : str.slice(start, end) });
+		if (end > start)
+			ret.push({ isPart : true, index : start, str : str.slice(start, end) });
+		tmpEnd = null;
 	}
 
 	if (end < str.length)

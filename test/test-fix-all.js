@@ -13,6 +13,20 @@ if (doc) {
 	html = utils.trim(html);
 	console.log('doc is ', doc[1]);
 }
+function regParts(reg, str) {
+	var one;
+	var ret = [];
+	while (one = reg.exec(str)) ret.push(one);
+	ret.str = str;
+	return ret;
+}
+
+// var rcommentHead = utils.rcommentHead = /<!--/ig;
+// var rcommentTail = utils.rcommentTail = /-->/ig;
+// var ret = regParts(rcommentHead, html);
+// console.log(ret);
+// var ret2 = regParts(rcommentTail, html);
+// console.log(ret2);
 // console.log(html);
 
 var comments = utils.handleComments(html);

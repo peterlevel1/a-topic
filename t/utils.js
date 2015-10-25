@@ -90,7 +90,6 @@ function handleParts(rhead, rtail, str) {
 			console.warn('handleParts: head.length > tail.length');
 			while (head.length > tail.length) {
 				head = head.slice(1);
-				// console.log(head);
 			}
 		} else if (head.length < tail.length) {
 			console.warn('handleParts: head.length < tail.length');

@@ -1,11 +1,8 @@
 var utils = module.exports;
 
 var rtag = utils.rtag = /<(\/)?([\w]+)([^>]+|)?>/;
-
 var rtag_g = utils.rtag_g = /<[^>]+>/g;
-
 var singleTags = utils.singleTags = 'link br hr meta input img base param'.split(' ');
-
 var isSingle = utils.isSingle = function (tag, tagName) {
 	return tag[tag.length - 2] === '/' ||
 		( (tagName ||
@@ -14,7 +11,6 @@ var isSingle = utils.isSingle = function (tag, tagName) {
 };
 
 var rattr = utils.rattr = /[\s\t]+([\w-]+)(?:=\"([^\"]+)\"|=\'([^\']+)\'|)?/g;
-
 var makeAttributes = utils.makeAttributes = function (str) {
 	var one;
 	var node = {};
@@ -23,21 +19,17 @@ var makeAttributes = utils.makeAttributes = function (str) {
 	}
 	return node;
 };
-
 var isTag = utils.isTag = function (tag) {
 	return rtag.test(tag);
 };
-
 var matchTag = utils.matchTag = function (tag) {
 	return isTag(tag) && tag.match(rtag);
 };
-
 var isTagEnd = utils.isTagEnd = function (tag) {
 	return isTag(tag) && tag[1] === '/';
 };
 
 var rtrim = utils.rtrim = /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g;
-
 utils.trim = function (text) {
 	return text == null
 		? ""
@@ -45,22 +37,17 @@ utils.trim = function (text) {
 };
 
 utils.rdoc = /<[!?]?(doctype|xml)[^>]+>/i;
-
 utils.rxmlHead = /<\?[^>]+\?>/ig;
-//not greedy match,
-//inner script tag no "<script> ... </script>"
+//not greedy match, inner script tag no "<script> ... </script>"
 utils.rscript = /(<script[^>]*>)([\s\S]+?(?=\<\/script\>)|)?(<\/script>)/ig;
-
 utils.rcomment = /<!--([\s\S]+?(?=\-\-\>)|)?-->/ig;
 
 var rbody = utils.rbody = /<body[^>]*>[\s\S]+<\/body>/;
-
 utils.getBody = function (str) {
 	return getMain(rbody, str);
 };
 
 var rhead = utils.rhead = /<head[^>]*>[\s\S]+<\/head>/;
-
 utils.getHead = function (str) {
 	return getMain(rhead, str);
 };
@@ -82,10 +69,9 @@ utils.handleComments = function(str) {
 };
 
 function regParts(reg, str) {
+	var one;
 	var ret = [];
 	ret.str = str;
-
-	var one;
 	while (one = reg.exec(str)) ret.push(one);
 
 	return ret;

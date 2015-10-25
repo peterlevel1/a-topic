@@ -2,20 +2,11 @@ var fs = require('fs');
 var readFile = fs.readFile;
 var writeFile = fs.writeFile;
 var path = require('path');
+var repeatString = require('./repeatString.js');
 var rline = /\n/g;
 var rquote = /'/g;
 
 module.exports = addQuote;
-
-function repeatStr(i, repeated) {
-	var ret = '';
-	i = ~~i;
-	if (i <= 0 || typeof repeated !== 'string')
-		return ret;
-
-	while (i--) ret += repeated;
-	return ret;
-}
 
 function addQuote(opts, callback) {
 	var input = opts.input && path.resolve(opts.input + '');
@@ -24,7 +15,7 @@ function addQuote(opts, callback) {
 
 	var output = opts.output && path.resolve(opts.output + '');
 	var tab = opts.itab != null
-			? repeatStr(opts.itab, '\t')
+			? repeatString(opts.itab, '\t')
 			: '';
 
 	readFile(input, 'utf8', function (err, str) {

@@ -86,17 +86,25 @@ function handleParts(rhead, rtail, str) {
 
 	if (head.length && tail.length) {
 		if (head.length > tail.length) {
-			console.log('handleParts: head.length > tail.length');
+			console.warn('handleParts: head.length > tail.length');
 			while (head.length > tail.length) head.shift();
 		} else if (head.length < tail.length) {
-			console.log('handleParts: head.length < tail.length');
+			console.warn('handleParts: head.length < tail.length');
 			while (head.length < tail.length) tail.pop();
 		}
 	}
 
 	if (!head.length || !tail.length) {
-		if (!head.length) console.warn('handleParts: no head part');
-		if (!tail.length) console.warn('handleParts: no tail part');
+		if (!head.length)
+			console.warn('handleParts: no head part');
+		else
+			ret.head = head;
+
+		if (!tail.length)
+			console.warn('handleParts: no tail part');
+		else
+			ret.tail = tail;
+
 		return ret;
 	}
 

@@ -11,27 +11,22 @@ module.exports = function parseString(str) {
 		throw new Error('parseString: not standard input str');
 	}
 
-	var ret = [];
-	ret.tagNames = [];
-
 	var tagName;
 	var stack = [];
 	var tag;
 	var startTagName;
 	var match;
+	var ret = [];
+	ret.tagNames = [];
 
 	for (var i = 0, l = tags.length; i < l; i++) {
 		tag = tags[i];
+		ret.push(tag, texts[i]);
+
 		match = utils.rtag.exec(tag);
 		tagName = match[2];
-
-		if (!match[1]) {
-			if (!~ret.tagNames.indexOf(tagName)) {
-				ret.tagNames.push(tagName);
-			}
-		}
-
-		ret.push(tag, texts[i]);
+		if (!match[1] && !~ret.tagNames.indexOf(tagName))
+			ret.tagNames.push(tagName);
 
 		if (!utils.isSingle(tag, tagName)) {
 			stack.push(tagName);

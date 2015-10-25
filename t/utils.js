@@ -20,6 +20,7 @@ var makeAttributes = utils.makeAttributes = function (str) {
 	}
 	return node;
 };
+
 var isTag = utils.isTag = function (tag) {
 	return rtag.test(tag);
 };

@@ -89,6 +89,15 @@ var oescape = {
 	'/' : '&#x2F;'
 };
 
+var ounescape = {
+	'&amp;'  : '&',
+	'&lt;'   : '<',
+	'&gt;'   : '>',
+	'&quot;' : '"',
+	'&#x27;' : "'",
+	'&#x2F;' : '/'
+};
+
 var rescape = /[&<>"'\/]/g;
 
 function _replace(one) {

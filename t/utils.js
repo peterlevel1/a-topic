@@ -154,10 +154,6 @@ function handleParts(rhead, rtail, str) {
 	if (!head.length || !tail.length) {
 		if (!head.length) console.warn('handleParts: no head part');
 		if (!tail.length) console.warn('handleParts: no tail part');
-		var one = head || tail;
-		if (one.length) {
-			while (bad = one.shift()) str = escapeBad(str, bad);
-		}
 		ret.str = str;
 		return ret;
 	}

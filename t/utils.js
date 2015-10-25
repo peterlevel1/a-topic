@@ -38,10 +38,10 @@ utils.trim = function (text) {
 		: ( text + "" ).replace( rtrim, "" );
 };
 
-utils.rdoc = /<[!?]?(doctype|xml)[^>]+>/i;
+utils.rdoc = /^<[!?]?(doctype|xml)[^>]+>/i;
 utils.rxmlHead = /<\?[^>]+\?>/ig;
 //not greedy match, inner script tag no "<script> ... </script>"
-utils.rscript = /(<script[^>]*>)([\s\S]+?(?=\<\/script\>)|)?(<\/script>)/ig;
+utils.rscript = /(<script[^>]*(?!\/)>)([\s\S]+?(?=\<\/script\>)|)?(<\/script>)/ig;
 utils.rcomment = /<!--([\s\S]+?(?=\-\-\>)|)?-->/ig;
 
 var rbody = utils.rbody = /<body[^>]*>[\s\S]+<\/body>/;
@@ -88,10 +88,15 @@ function handleParts(rhead, rtail, str) {
 	if (head.length && tail.length) {
 		if (head.length > tail.length) {
 			console.warn('handleParts: head.length > tail.length');
-			while (head.length > tail.length) head.shift();
+			while (head.length > tail.length) {
+				head = head.slice(1);
+				// console.log(head);
+			}
 		} else if (head.length < tail.length) {
 			console.warn('handleParts: head.length < tail.length');
-			while (head.length < tail.length) tail.pop();
+			while (head.length < tail.length) {
+				tail = tail.slice(0, tail.length - 1);
+			}
 		}
 	}
 

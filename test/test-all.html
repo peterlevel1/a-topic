@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<!--[if lt IE 9]>
+	<script src="http://static.zhihu.com/static/components/respond/dest/respond.min.js"></script>
+	<link href="http://static.zhihu.com/static/components/respond/cross-domain/respond-proxy.html" id="respond-proxy" rel="respond-proxy" />
+	<link href="/static/components/respond/cross-domain/respond.proxy.gif" id="respond-redirect" rel="respond-redirect" />
+	<script src="/static/components/respond/cross-domain/respond.proxy.js"></script>
+	<![endif]-->
+
+	<script type="text/javascript">
+		var str = '<script> <div> <script></script> </div> </script>';
+	</script>
+
+</head>
+<body>
+	<!-- coments-1 -->
+	<div id="div1">
+		<script>
+			var str = '<script> coments-1 </script>';
+		</script>
+	</div>
+	<!-- coments-2 -->
+	<div id="div2">
+		<script>
+			var str = '<script> coments-2 </script>';
+			var script = $('<script></script>').appendTo('body');
+		</script>
+		div2: text here
+	</div>
+
+	<div id="div3">
+		<ul>
+			<li>
+				<a href="#"> heihei </a>
+			</li>
+			<li>
+				<a href="#"> heihei </a>
+			</li>
+		</ul>
+		<link rel="stylesheet" href="#">
+	</div>
+</body>
+</html>

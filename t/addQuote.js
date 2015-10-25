@@ -18,11 +18,11 @@ function repeatStr(i, repeated) {
 }
 
 function addQuote(opts, callback) {
-	var input = opts.input && path.normalize(input + '');
+	var input = opts.input && path.resolve(opts.input + '');
 	if (!input)
 		return callback(new Error('addQuote: input -> output, must both exists'));
 
-	var output = opts.output && path.normalize(output + '');
+	var output = opts.output && path.resolve(opts.output + '');
 	var tab = opts.itab != null
 			? repeatStr(opts.itab, '\t')
 			: '';
@@ -54,7 +54,7 @@ function addQuote(opts, callback) {
 var amdHead = "define(function () {\n\treturn '' +\n";
 var amdTail = ';\n});';
 addQuote.amd = function (opts, callback) {
-	var output = opts.output && path.normalize(output + '');
+	var output = opts.output && path.resolve(opts.output + '');
 	opts = {
 		input : opts.input,
 		itab : opts.itab

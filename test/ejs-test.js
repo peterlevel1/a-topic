@@ -1,6 +1,6 @@
 var addQuote = require('../t/addQuote.js');
-var input = './ejs-1.html';
-var output = './output-ejs-1.js';
+var input = 'ejs-1.html';
+var output = 'output-ejs-1.js';
 var opts = {
 	input : input,
 	output : output,

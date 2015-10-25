@@ -51,8 +51,10 @@ function addQuote(opts, callback) {
 	});
 };
 
-var amdHead = "define(function () {\n\treturn '' +\n";
+var amdHead = "define(function (require) {\n\treturn '' +\n";
 var amdTail = ';\n});';
+var rinclude = /<%-[\s\t]*include(\([^)]+\));?[\s\t]*%>/g;
+
 addQuote.amd = function (opts, callback) {
 	var output = opts.output && path.resolve(opts.output + '');
 	opts = {
@@ -63,7 +65,7 @@ addQuote.amd = function (opts, callback) {
 		if (err)
 			return callback(err);
 
-		str = amdHead + str + amdTail;
+		str = amdHead + str.replace(rinclude, '\' + require$1 + \'') + amdTail;
 
 		if (!output)
 			return callback(null, str);

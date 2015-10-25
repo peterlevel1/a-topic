@@ -114,9 +114,9 @@ function handleParts(rhead, rtail, str) {
 	var ret = [];
 	var bad;
 
-	if (head.length && tail.length && head.length !== tail.length) {
+	if (head.length !== tail.length) {
 		console.warn('handleParts: head.length !== tail.length');
-		if (rtag.test(head[0])) {
+		if (rtag.test(head[0]) && head.length) {
 			var len = head.length;
 			while (len--) {
 				bad = head[len];

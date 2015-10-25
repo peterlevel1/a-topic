@@ -111,7 +111,7 @@ var ounescape = {
 var runescape = /(?:&amp;|&lt;|&gt;|&quot;|&#x27;|&#x2F;)/g;
 
 function _unescape(one) {
-	return runescape[one];
+	return ounescape[one];
 }
 
 function unescapeString(str) {

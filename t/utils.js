@@ -61,10 +61,60 @@ function getMain(reg, str) {
 	return (str.match(reg) || [''])[0];
 }
 
+var rquote = /['"]/;
 var rscriptHead = utils.rscriptHead = /<script[^>]*>/ig;
 var rscriptTail = utils.rscriptTail = /<\/script>/ig;
 utils.handleScripts = function(str) {
-	return handleParts(rscriptHead, rscriptTail, str);
+	var tail = regParts(rscriptTail, str);
+	var head = regParts(rscriptHead, str);
+	var end;
+	var start;
+	var tmpEnd;
+	var stack = [];
+	var bad;
+	while (start = head[0]) {
+		end = false;
+		while (head[0] &&
+			(tmpEnd = tmpEnd || tail[0].index) > head[0].index) {
+			head.shift();
+			end = tail.shift();
+		}
+		tmpEnd = null;
+
+		if (!end)
+			break;
+
+		bad = str.slice(
+			start.index + start[0].length,
+			end.index
+		);
+		if (rquote.test(bad)) {
+			stack.push({
+				start : start.index + start[0].length,
+				end : end.index,
+				str : bad
+			});
+		}
+	}
+
+	end = 0;
+	str = !stack.length
+		? str
+			// [end 	+     start str] end...
+			//start + [<script>| bad |</script>]... + tail
+		: stack.reduce(function (memo, one) {
+				memo += (one.start > end
+					? str.slice(end, one.start)
+					: '')
+					+ escapeString(one.str);
+				end = one.end;
+				return memo;
+			}, '') + str.slice(end);
+
+	head = !stack.length ? head : regParts(rscriptHead, str);
+	tail = !stack.length ? tail : regParts(rscriptTail, str);
+
+	return handleParts(head, tail, str);
 };
 
 var rcommentHead = utils.rcommentHead = /<!--/ig;
@@ -80,8 +130,6 @@ function regParts(reg, str) {
 	ret.str = str;
 	return ret;
 }
-
-var rquote = /['"]/;
 
 var oescape = {
 	'&' : '&amp;',
@@ -128,8 +176,8 @@ function escapeBad(str, bad) {
 }
 
 function handleParts(rhead, rtail, str) {
-	var head = regParts(rhead, str);
-	var tail = regParts(rtail, str);
+	var head = Array.isArray(rhead) ? rhead : regParts(rhead, str);
+	var tail = Array.isArray(rtail) ? rtail : regParts(rtail, str);
 	var ret = [];
 	var bad;
 

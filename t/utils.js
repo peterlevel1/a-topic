@@ -113,6 +113,7 @@ function escapeBad(str, bad) {
 		+ str.slice(bad.index + bad[0].length);
 }
 
+utils.handleParts = handleParts;
 function handleParts(rhead, rtail, str) {
 	var head = Array.isArray(rhead) ? rhead : regParts(rhead, str);
 	var tail = Array.isArray(rtail) ? rtail : regParts(rtail, str);

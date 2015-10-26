@@ -12,20 +12,16 @@ var add = function (memo, one) {
 
 //rdoc
 html = html.replace(utils.rdoc, '');
-html = utils.trim(html);
 
 //comments
 html = utils.handleComments(html).reduce(add, '');
-html = utils.trim(html);
 
-//script comments
+// script comments
 html = html.replace(utils.rscriptCommentLine, '')
 	.replace(utils.rscriptCommentAll, '');
-html = utils.trim(html);
 
 //script replace
 html = utils.handleScripts(html).reduce(add, '');
-html = utils.trim(html);
 
 //tree
 var tree = build(html);

@@ -160,3 +160,147 @@ console.log(ret);
 	// console.log(str.slice(0, index));
 	// console.log(str.slice(index, index + a.length + b.length + c.length));
 	// console.log(str.slice(index + a.length + b.length + c.length));
+
+
+	utils.handleScripts2 = function(str) {
+	var tail = regParts(rscriptTail, str);
+	var head = regParts(rscriptHead, str);
+	var end;
+	var start;
+	var tmpEnd;
+	var stack = [];
+	var bad;
+	while (start = head[0]) {
+		end = false;
+		while (head[0] &&
+			(tmpEnd = tmpEnd || tail[0].index) > head[0].index) {
+			head.shift();
+			end = tail.shift();
+		}
+		tmpEnd = null;
+
+		if (!end)
+			break;
+
+		bad = str.slice(
+			start.index + start[0].length,
+			end.index
+		);
+		if (rquote.test(bad)) {
+			stack.push({
+				start : start.index + start[0].length,
+				end : end.index,
+				str : bad
+			});
+		}
+	}
+
+	end = 0;
+	str = !stack.length
+		? str
+			// [end 	+     start str] end...
+			//start + [<script>| bad |</script>]... + tail
+		: stack.reduce(function (memo, one) {
+				memo += (one.start > end
+					? str.slice(end, one.start)
+					: '')
+					+ escapeString(one.str);
+				end = one.end;
+				return memo;
+			}, '') + str.slice(end);
+
+	head = !stack.length ? head : regParts(rscriptHead, str);
+	tail = !stack.length ? tail : regParts(rscriptTail, str);
+
+	return handleParts(head, tail, str);
+};
+
+var _bad = bad[0];
+index = bad.index;
+bad = escapeString(_bad);
+str = str.replace(_bad, bad);
+var delta = bad.length - _bad.length;
+var l;
+
+l = head.length;
+while (l--) {
+if (head[l].index >= index) head[l].index += delta;
+else break;
+}
+
+l = tail.length;
+while (l--) {
+if (tail[l].index >= index) tail[l].index += delta;
+else break;
+}
+
+var rcommentHead = utils.rcommentHead = /<!--/ig;
+var rcommentTail = utils.rcommentTail = /-->/ig;
+utils.handleComments = function(str) {
+	return handleParts(rcommentHead, rcommentTail, str);
+};
+
+//script only match two exist together;
+var rquote = /['"]/;
+var rscriptHead = utils.rscriptHead = /<script[^>]*>/ig;
+var rscriptTail = utils.rscriptTail = /<\/script>/ig;
+utils.handleScripts = function(str) {
+	var tail = regParts(rscriptTail, str);
+	var head = regParts(rscriptHead, str);
+	var end;
+	var start;
+	var tmpEnd;
+	var tmpStart;
+	var stack = [];
+	var bad;
+	var index;
+
+	while (start = start || head.shift()) {
+		tmpStart = start;
+		tmpEnd = tail.shift();
+
+		if (tmpEnd) {
+			index = tmpEnd.index;
+			while (tmpStart && tmpStart.index < index) {
+				end = tail.shift();
+				tmpStart = head.shift();
+			}
+		}
+
+		if (end) {
+			index = start.index + start[0].length;
+			if (end.index > index) {
+				bad = str.slice(index, end.index);
+				//bug here:
+				if (!rquote.test(bad)) {
+					stack.push({ start : index, end : end.index, str : bad });
+				}
+			}
+			end = null;
+		}
+		start = null;
+	}
+
+	if (stack.length) {
+		end = 0;
+		// [end 	+     start str] end...
+		//start + [<script>| bad |</script>]... + tail
+		str = stack.reduce(function (memo, one) {
+			memo += (one.start > end
+				? str.slice(end, one.start)
+				: '')
+				+ escapeString(one.str);
+			end = one.end;
+			return memo;
+		}, '') + str.slice(end);
+	}
+
+	while (end = tail.shift()) {
+		str = escapeBad(str, end);
+	}
+
+	head = regParts(rscriptHead, str);
+	tail = regParts(rscriptTail, str);
+
+	return handleParts(head, tail, str);
+};

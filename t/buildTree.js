@@ -187,12 +187,15 @@ function buildTree(str) {
 		throw new Error('buildTree: not standard input arg');
 
 	var tracker = [], parentIndex = false, map = {},
-		tree = stack.reduce(buildStructure(stack, tracker, parentIndex, map), [])
-			.sort(sortNodesOrder)
-			.map(setNodesRelation(map));
+		__buildStructure = buildStructure(stack, tracker, parentIndex, map),
+		__setNodesRelation = setNodesRelation(map),
+		tree = stack.reduce(a, []).sort(sortNodesOrder).map(b);
 
 	if (tracker.length)
 		throw new Error('buildTree: tracker not empty: ' + tracker.join(''));
+
+	__buildStructure = null;
+	__setNodesRelation = null;
 
 	tree.stack = stack;
 	tree.indexMap = map;

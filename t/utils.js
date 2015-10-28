@@ -81,7 +81,7 @@ var oescape = {
 
 var rescape = /[&<>"'\/]/g;
 
-function _replace(one) {
+function _escape(one) {
 	return oescape[one];
 }
 
@@ -102,7 +102,7 @@ function _unescape(one) {
 
 utils.escape = escapeString;
 function escapeString(str) {
-	return str.replace(rescape, _replace);
+	return str.replace(rescape, _escape);
 }
 
 utils.unescape = escapeString;

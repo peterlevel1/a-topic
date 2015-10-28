@@ -61,6 +61,7 @@ function getMain(reg, str) {
 	return (str.match(reg) || [''])[0];
 }
 
+utils.regParts = regParts;
 function regParts(reg, str) {
 	var one;
 	var ret = [];
@@ -84,10 +85,6 @@ function _replace(one) {
 	return oescape[one];
 }
 
-function escapeString(str) {
-	return str.replace(rescape, _replace);
-}
-
 var ounescape = {
 	'&amp;'  : '&',
 	'&lt;'   : '<',
@@ -103,10 +100,17 @@ function _unescape(one) {
 	return ounescape[one];
 }
 
+utils.escape = escapeString;
+function escapeString(str) {
+	return str.replace(rescape, _replace);
+}
+
+utils.unescape = escapeString;
 function unescapeString(str) {
 	return str.replace(runescape, _unescape);
 }
 
+utils.escapeBad = escapeBad;
 function escapeBad(str, bad) {
 	return str.slice(0, bad.index)
 		+ escapeString(bad[0])

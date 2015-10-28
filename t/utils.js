@@ -11,7 +11,7 @@ var isSingle = utils.isSingle = function (tag, tagName) {
 			singleTags.indexOf(tagName) >= 0 );
 };
 
-var rattr = utils.rattr = /[\s\t]+([\w-]+)(?:=\"([^\"]+)\"|=\'([^\']+)\'|)?/g;
+var rattr = utils.rattr = /[\s\t]+([\w\:-]+)(?:=\"([^\"]+)\"|=\'([^\']+)\'|)?/g;
 var makeAttributes = utils.makeAttributes = function (str) {
 	var one;
 	var node = {};
@@ -39,7 +39,7 @@ utils.trim = function (text) {
 };
 
 utils.rdoc = /^<[!?]?(doctype|xml)[^>]+>/i;
-utils.rxmlHead = /<\?[^>]+\?>/ig;
+utils.rxmlHead = /<\?[^>]*?\?>/ig;
 
 //not greedy match, inner script tag: two script tag should exist together
 utils.rscript = /(<script[^>]*(?!\/)>)([\s\S]+?(?=\<\/script\>)|)?(<\/script>)/g;
@@ -117,21 +117,22 @@ utils.handleParts = handleParts;
 function handleParts(rhead, rtail, str) {
 	var head = Array.isArray(rhead) ? rhead : regParts(rhead, str);
 	var tail = Array.isArray(rtail) ? rtail : regParts(rtail, str);
-	var bad;
-	while (head.length !== tail.length) {
-		bad = head.length > tail.length
-			? head.shift()
-			: tail.pop();
-		str = escapeBad(str, bad);
+	if (head.length !== tail.length) {
+		var bad;
+		while (head.length !== tail.length) {
+			bad = head.length > tail.length ? head.shift() : tail.pop();
+			str = escapeBad(str, bad);
+		}
+		head = regParts(rhead, str);
+		tail = regParts(rtail, str);
 	}
 
 	var ret = [], endIndex = 0, startIndex = 0, start, end, index;
 	while (start = head.shift()) {
 		startIndex = start.index;
 
-		if (endIndex < startIndex) {
+		if (endIndex < startIndex)
 			ret.push({ isPart : false, index : endIndex, str : str.slice(endIndex, startIndex) });
-		}
 
 		end = tail.shift();
 		endIndex = end.index;
@@ -140,15 +141,12 @@ function handleParts(rhead, rtail, str) {
 			end = tail.shift();
 		}
 
-		if (end.index + end[0].length > startIndex) {
-			ret.push({ isPart : true, index : startIndex, str : str.slice(startIndex, end.index + end[0].length) });
-			endIndex = end.index + end[0].length;
-		}
+		if ((endIndex = end.index + end[0].length) > startIndex)
+			ret.push({ isPart : true, index : startIndex, str : str.slice(startIndex, endIndex) });
 	}
 
-	if (endIndex < str.length) {
+	if (endIndex < str.length)
 		ret.push({ isPart : false, index : endIndex, str : str.slice(endIndex) });
-	}
 
 	ret.str = str;
 	return ret;
@@ -168,12 +166,9 @@ utils.handleScripts = function(str) {
 };
 
 var rquote = /(?:('[^']*?')|("[^"]*?"))/g;
+utils.escapeQuoteTag = escapeQuoteTag;
 function escapeQuoteTag(str) {
 	return str.replace(rquote, function (all) {
-		if (rtag.test(all)) {
-			return escapeString(all);
-		} else {
-			return all;
-		}
+		return rtag.test(all) ? escapeString(all) : all;
 	});
 }

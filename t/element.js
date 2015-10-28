@@ -82,8 +82,8 @@ ElementNode.prototype.createAttribute = function () {};
 ElementNode.prototype.getAttribute = function () {};
 ElementNode.prototype.setAttribute = function () {};
 ElementNode.prototype.removeAttribute = function () {};
+ElementNode.prototype.compareDocumentPosition = function () {};
 
 // DocumentElementNode.prototype.createElement = function () {};
 // DocumentElementNode.prototype.createTextNode = function () {};
 // DocumentElementNode.prototype.getElementById = function () {};
-

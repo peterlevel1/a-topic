@@ -118,8 +118,3 @@ function buildTree(str) {
 
 	return tree;
 }
-
-// var str = '<div> <ul id="ul-1"> asas </ul> </div>';
-// var tree = buildTree(str);
-// console.log(tree);
-// tree[1].helloWorld();

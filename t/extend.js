@@ -31,13 +31,13 @@
 		!(isObject(target) || typeof target === 'function') && (target = {});
 		arguments.length <= 1 && !(index = 0) && (target = this);
 
-		targetIsArray = Array.isArray(target);
-
 		return arguments.length === 0 ? target :
 			pSlice.call(arguments, index).reduce(function (target, obj) {
 				if (obj == null || !isObject(obj) || !(isPlainObject(obj) || Array.isArray(obj))) {
 					return target;
 				}
+
+				targetIsArray = Array.isArray(target);
 
 				Object.keys(obj).reduce(function (target, key) {
 					var value = obj[key];

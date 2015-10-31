@@ -20,12 +20,9 @@
 	}
 
 	function extend() {
-		var target;
 		var deep = arguments[0] === true;
 		var index = 1;
-		var targetIsArray;
-
-		target = typeof arguments[0] === 'boolean'
+		var target = typeof arguments[0] === 'boolean'
 			? ++index && arguments[1]
 			: arguments[0];
 		!(isObject(target) || typeof target === 'function') && (target = {});
@@ -37,7 +34,7 @@
 					return target;
 				}
 
-				targetIsArray = Array.isArray(target);
+				var targetIsArray = Array.isArray(target);
 
 				Object.keys(obj).reduce(function (target, key) {
 					var value = obj[key];

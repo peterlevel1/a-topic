@@ -18,10 +18,11 @@ var goOn = true;
 var prevRet = [];
 var child;
 //----
-var parseString = require('./t/parseString.js');
-var buildTree = require('./t/buildTree.js');
-var utils = require('./t/utils.js');
-var treeWalker = require('./t/treeWalker.js');
+var t = require('t');
+var parseString = t.parseString;
+var buildTree = t.buildTree;
+var utils = t.utils;
+var treeWalker = t.treeWalker;
 
 curlCmd(cmd);
 
